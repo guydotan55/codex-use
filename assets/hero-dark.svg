@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="t d">
+<title id="t">codex-use</title><desc id="d">A Claude Code skill that hands tasks from Claude to Codex CLI, which builds in an isolated git worktree.</desc>
+<rect width="1280" height="400" fill="#0D1117"/>
+<rect x="0.5" y="0.5" width="1279" height="399" fill="none" stroke="#30363D"/>
+<text x="80" y="165" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="72" font-weight="700" fill="#E6EDF3">codex-use</text>
+<text x="80" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#9198A1">Claude plans and reviews.</text>
+<text x="80" y="256" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#9198A1">Codex builds in an isolated worktree.</text>
+<text x="80" y="330" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#9198A1">A Claude Code skill for OpenAI Codex CLI</text>
+<g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect x="700" y="110" width="200" height="110" rx="14" fill="#161B22" stroke="#E8825F" stroke-width="2"/>
+<text x="800" y="158" text-anchor="middle" font-size="24" font-weight="600" fill="#E6EDF3">Claude</text>
+<text x="800" y="190" text-anchor="middle" font-size="16" fill="#9198A1">brief + review</text>
+<rect x="1010" y="110" width="200" height="110" rx="14" fill="#161B22" stroke="#3FCBA3" stroke-width="2"/>
+<text x="1110" y="158" text-anchor="middle" font-size="24" font-weight="600" fill="#E6EDF3">Codex</text>
+<text x="1110" y="190" text-anchor="middle" font-size="16" fill="#9198A1">builds + commits</text>
+<line x1="904" y1="165" x2="1000" y2="165" stroke="#9198A1" stroke-width="2"/>
+<path d="M1000 165 l-10 -6 v12 z" fill="#9198A1"/>
+<text x="952" y="150" text-anchor="middle" font-size="14" fill="#9198A1">brief</text>
+<path d="M1110 224 V262 H800 V230" fill="none" stroke="#9198A1" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M800 226 l-6 10 h12 z" fill="#9198A1"/>
+<text x="955" y="286" text-anchor="middle" font-size="14" fill="#9198A1">commits + report</text>
+<rect x="700" y="318" width="510" height="44" rx="10" fill="none" stroke="#30363D" stroke-width="1.5" stroke-dasharray="4 4"/>
+<text x="955" y="346" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#9198A1">git worktree  /  own branch  /  detached run</text>
+</g></svg>
