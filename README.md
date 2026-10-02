@@ -26,14 +26,16 @@ Then, in a Claude Code session inside a git worktree on a non-main branch:
 /codex-use build the settings page from docs/spec.md
 ```
 
-Claude asks which Codex model and effort to use, writes the brief, launches Codex, confirms it started, and reports back when it is done. Requirements are [below](#requirements).
+Claude asks which Codex model and effort to use, hands Codex your plan plus the rules for the run, launches it, confirms it started, and reports back when it is done. Requirements are [below](#requirements).
 
 ## Why use it
 
 Two coding agents are better than one when each does what it is good at. The idea here is a split:
 
-- **Claude plans, writes the brief, and reviews.** It has your conversation and context.
+- **Claude plans and reviews.** It has your conversation and context.
 - **Codex builds**, in an isolated git worktree on its own branch, committing as it goes.
+
+The skill does not write your spec or plan; you and Claude do that first. What it adds is a short brief: it points Codex at your plan ("read these files, then do tasks 1-5") and sets the rules for the run: stay in the worktree, don't push, commit after each task, don't ask questions, report back in a fixed format. Codex cannot see your chat with Claude, so anything not in the brief does not exist for it. For a small job with no plan, the brief is the whole instruction.
 
 The hard part is the handoff. Done by hand it is a pile of small ways to lose time, and this skill encodes the fixes so you do not re-derive them:
 
@@ -54,7 +56,7 @@ Each row comes from a real failure; the stories are in [references/lessons.md](r
 
 ```mermaid
 flowchart TD
-    A["You ask for a build"] --> B["Claude writes the brief and asks model and effort"]
+    A["You ask for a build"] --> B["Claude hands Codex your plan plus run rules, asks model and effort"]
     B --> C["Preflight: CLI, login, flags, models"]
     C --> D["Detached launch, then start check"]
     D --> E["Codex builds in the worktree, one commit per task"]
@@ -77,7 +79,7 @@ If you install somewhere other than `~/.claude/skills/codex-use`, adjust the `S=
 
 ## Usage
 
-- `/codex-use` or "send this to codex": pick model and effort, Claude writes the brief and launches.
+- `/codex-use` or "send this to codex": pick model and effort; Claude hands Codex your plan plus the run rules and launches.
 - "codex status" or "is codex done?": lists runs, including ones from earlier sessions.
 - After a review, "have codex fix these": resumes the same thread as `attempt-2`.
 - "stop codex": stops the attempt cleanly.
@@ -117,7 +119,7 @@ Use a disposable worktree and review the diff before pushing. See also [SECURITY
 
 **Does it work on Linux?** It is written to, and the known macOS-only calls have fallbacks, but only macOS has been tested. Reports welcome.
 
-**Can I use it without Claude Code?** Yes. The four scripts are plain bash and run standalone. You lose the dialog, the brief writing and the review step.
+**Can I use it without Claude Code?** Yes. The four scripts are plain bash and run standalone. You lose the dialog, the plan handoff and the review step.
 
 **What does it cost?** The skill itself is free. Codex usage counts against your Codex plan; the status output shows token usage per run.
 
