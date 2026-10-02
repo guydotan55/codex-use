@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-labelledby="t">
+<title id="t">Raw codex exec from Claude versus codex-use</title>
+<rect width="1280" height="560" fill="#0D1117"/>
+<g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+<text x="40" y="52" font-size="26" font-weight="700" fill="#E6EDF3">Same handoff, with and without the skill</text>
+<text x="190" y="104" font-size="15" font-weight="600" fill="#FF7B72" letter-spacing="1">RAW  codex exec</text>
+<text x="700" y="104" font-size="15" font-weight="600" fill="#56D364" letter-spacing="1">WITH  codex-use</text>
+<line x1="40" y1="118" x2="1240" y2="118" stroke="#30363D"/>
+<text x="40" y="172" font-size="18" font-weight="600" fill="#E6EDF3">Prompt</text>
+<text x="190" y="172" font-size="18" fill="#9198A1">Hangs waiting on stdin (one run sat for hours)</text>
+<text x="700" y="172" font-size="18" fill="#E6EDF3">Prompt always piped on stdin</text>
+<line x1="40" y1="194" x2="1240" y2="194" stroke="#30363D" stroke-opacity="0.6"/>
+<text x="40" y="238" font-size="18" font-weight="600" fill="#E6EDF3">Model</text>
+<text x="190" y="238" font-size="18" fill="#9198A1">Unvalidated id fails mid-run</text>
+<text x="700" y="238" font-size="18" fill="#E6EDF3">Checked against Codex's model cache</text>
+<line x1="40" y1="260" x2="1240" y2="260" stroke="#30363D" stroke-opacity="0.6"/>
+<text x="40" y="304" font-size="18" font-weight="600" fill="#E6EDF3">Start</text>
+<text x="190" y="304" font-size="18" fill="#9198A1">"It's running" said, never checked</text>
+<text x="700" y="304" font-size="18" fill="#E6EDF3">Waits for a real turn.started event</text>
+<line x1="40" y1="326" x2="1240" y2="326" stroke="#30363D" stroke-opacity="0.6"/>
+<text x="40" y="370" font-size="18" font-weight="600" fill="#E6EDF3">Session</text>
+<text x="190" y="370" font-size="18" fill="#9198A1">Run dies or is orphaned with the chat</text>
+<text x="700" y="370" font-size="18" fill="#E6EDF3">Detached; status from any later session</text>
+<line x1="40" y1="392" x2="1240" y2="392" stroke="#30363D" stroke-opacity="0.6"/>
+<text x="40" y="436" font-size="18" font-weight="600" fill="#E6EDF3">Sandbox</text>
+<text x="190" y="436" font-size="18" fill="#9198A1">False blockers: .git, /tmp, network</text>
+<text x="700" y="436" font-size="18" fill="#E6EDF3">Worktree-only, no-sandbox, ref audit</text>
+<line x1="40" y1="458" x2="1240" y2="458" stroke="#30363D" stroke-opacity="0.6"/>
+<text x="40" y="502" font-size="18" font-weight="600" fill="#E6EDF3">Review</text>
+<text x="190" y="502" font-size="18" fill="#9198A1">Open-ended fix loops</text>
+<text x="700" y="502" font-size="18" fill="#E6EDF3">One fix round on the same thread</text>
+<line x1="40" y1="524" x2="1240" y2="524" stroke="#30363D" stroke-opacity="0.6"/>
+</g></svg>

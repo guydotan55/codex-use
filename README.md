@@ -1,17 +1,70 @@
-# codex-use
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark.svg">
+    <img alt="codex-use: Claude plans and reviews, Codex builds in an isolated worktree" src="assets/hero-light.svg" width="100%">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <img alt="Claude Code skill" src="https://img.shields.io/badge/Claude%20Code-skill-C96442">
+  <img alt="Codex CLI tested on 0.159.3" src="https://img.shields.io/badge/Codex%20CLI-tested%200.159.3-10A37F">
+  <img alt="Platform: macOS, Linux best-effort" src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20best--effort-lightgrey">
+</p>
 
 A Claude Code skill that hands a task to OpenAI's Codex CLI (`codex exec`), checks that it really started, waits without blocking, and brings back a verified result.
 
-## What it does
+## Quick start
 
-- Asks for model and reasoning effort once, validates both against Codex's own model cache, and writes a structured brief for Codex.
-- Launches Codex detached, so the run survives the end of your Claude Code session. A start check proves a turn actually began before anyone says "it's running".
-- Runs in a git worktree with no sandbox, so Codex is not stopped by false blockers (blocked `.git`, `/tmp`, network). A git-ref audit afterwards flags any branch or ref changes outside the run's own branch.
-- Supports resume fix rounds on the same Codex thread, status checks (also from a later session), and a clean stop.
+```
+git clone https://github.com/guydotan55/codex-use ~/.claude/skills/codex-use
+```
 
-### Why not just run `codex exec`
+Then, in a Claude Code session inside a git worktree on a non-main branch:
 
-A bare `codex exec` can hang on stdin, fail on a model id the CLI does not validate, and leaves "is it running?" unverified. This skill encodes those lessons in four scripts: prompt via stdin, model/effort validated and clamped, one `attempt-N/` directory per launch, pid-reuse-safe state, an exact final-report format, and a bounded review loop. See `references/lessons.md`.
+```
+/codex-use build the settings page from docs/spec.md
+```
+
+Claude asks which Codex model and effort to use, writes the brief, launches Codex, confirms it started, and reports back when it is done. Requirements are [below](#requirements).
+
+## Why use it
+
+Two coding agents are better than one when each does what it is good at. The idea here is a split:
+
+- **Claude plans, writes the brief, and reviews.** It has your conversation and context.
+- **Codex builds**, in an isolated git worktree on its own branch, committing as it goes.
+
+The hard part is the handoff. Done by hand it is a pile of small ways to lose time, and this skill encodes the fixes so you do not re-derive them:
+
+- **No babysitting.** The prompt is piped on stdin, so the run cannot hang on "Reading additional input from stdin". The model is checked against Codex's own model cache before launch, and the effort level is clamped to what that model supports.
+- **No "is it running?"** The skill waits for a real `turn.started` event before saying Codex is running, and shows Codex's own record of the model, effort and sandbox it used.
+- **Runs survive the session.** Codex is detached into its own process group. Close the chat, come back later, and `codex status` lists every run: running, finished, or died.
+- **A bounded review loop.** After the build, Claude reviews the diff, and you can send one fix round to the same Codex thread, which still has the code in context. A second round is never automatic.
+- **Guardrails by default.** Build mode refuses `main`, `master` and a detached HEAD, snapshots git refs before the run and audits them after, and asks Codex for one commit per task so progress is visible and recoverable. See [Safety](#safety) for what this does and does not protect.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/before-after-dark.svg">
+  <img alt="Comparison of raw codex exec from Claude and codex-use across prompt, model, start, session, sandbox and review" src="assets/before-after-light.svg" width="100%">
+</picture>
+
+Each row comes from a real failure; the stories are in [references/lessons.md](references/lessons.md).
+
+## Workflow
+
+```mermaid
+flowchart TD
+    A["You ask for a build"] --> B["Claude writes the brief and asks model and effort"]
+    B --> C["Preflight: CLI, login, flags, models"]
+    C --> D["Detached launch, then start check"]
+    D --> E["Codex builds in the worktree, one commit per task"]
+    E --> F["Status and monitor"]
+    F --> G["Git-ref audit"]
+    G --> H["Claude reviews the diff"]
+    H -->|findings| I["Optional resume fix round, same thread"]
+    I --> F
+    H -->|clean| J["You merge"]
+```
 
 ## Requirements
 
@@ -20,17 +73,9 @@ A bare `codex exec` can hang on stdin, fail on a model id the CLI does not valid
 - `jq`, `perl`, `git`, `bash` (3.2 compatible)
 - macOS is tested. Linux is best-effort and not yet tested.
 
-## Install
-
-```
-git clone https://github.com/guydotan55/codex-use ~/.claude/skills/codex-use
-```
-
-If you install elsewhere, adjust the `S=` path in `SKILL.md`.
+If you install somewhere other than `~/.claude/skills/codex-use`, adjust the `S=` path in `SKILL.md`.
 
 ## Usage
-
-In a Claude Code session, on a non-main branch in a git worktree:
 
 - `/codex-use` or "send this to codex": pick model and effort, Claude writes the brief and launches.
 - "codex status" or "is codex done?": lists runs, including ones from earlier sessions.
@@ -62,8 +107,25 @@ Not guarantees:
 - `~/.codex-use/` stores briefs, event streams and logs, which may contain sensitive content.
 - The skill reads undocumented Codex internals (`models_cache.json`, session records) and may break when Codex changes.
 
-Use a disposable worktree and review the diff before pushing.
+Use a disposable worktree and review the diff before pushing. See also [SECURITY.md](SECURITY.md).
+
+## FAQ
+
+**Do I need an OpenAI login?** You need Codex CLI logged in (`codex login`); preflight asks the CLI itself. Which models you can use depends on your Codex account.
+
+**Why no sandbox?** Codex's sandbox blocked the worktree's `.git`, `/tmp` and the network, and Codex then reported false blockers and stopped. The skill trades the sandbox for a worktree, a ref audit and commit-per-task. That is a real trade; read [Safety](#safety).
+
+**Does it work on Linux?** It is written to, and the known macOS-only calls have fallbacks, but only macOS has been tested. Reports welcome.
+
+**Can I use it without Claude Code?** Yes. The four scripts are plain bash and run standalone. You lose the dialog, the brief writing and the review step.
+
+**What does it cost?** The skill itself is free. Codex usage counts against your Codex plan; the status output shows token usage per run.
+
+## Related
+
+- [Codex CLI](https://github.com/openai/codex)
+- [Claude Code skills](https://code.claude.com/docs/en/skills)
 
 ## License
 
-MIT
+[MIT](LICENSE)
