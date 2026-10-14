@@ -42,7 +42,8 @@ The hard part is the handoff. Done by hand it is a pile of small ways to lose ti
 - **No babysitting.** The prompt is piped on stdin, so the run cannot hang on "Reading additional input from stdin". The model is checked against Codex's own model cache before launch, and the effort level is clamped to what that model supports.
 - **No "is it running?"** The skill waits for a real `turn.started` event before saying Codex is running, and shows Codex's own record of the model, effort and sandbox it used.
 - **Runs survive the session.** Codex is detached into its own process group. Close the chat, come back later, and `codex status` lists every run: running, finished, or died.
-- **A bounded review loop.** After the build, Claude reviews the diff, and you can send one fix round to the same Codex thread, which still has the code in context. A second round is never automatic.
+- **Claude tries the result, not just the report.** Codex ends with a "How to verify" list of exact commands. Claude runs every one in the worktree (and starts the app when there is one) before anything is called done. A failing check goes at the top of the report, above Codex's own "Done".
+- **A bounded review loop.** After the build, Claude reviews the diff together with those results, and you can send one fix round to the same Codex thread, which still has the code in context. A second round is never automatic.
 - **Guardrails by default.** Build mode refuses `main`, `master` and a detached HEAD, snapshots git refs before the run and audits them after, and asks Codex for one commit per task so progress is visible and recoverable. See [Safety](#safety) for what this does and does not protect.
 
 <picture>
@@ -62,7 +63,8 @@ flowchart TD
     D --> E["Codex builds in the worktree, one commit per task"]
     E --> F["Status and monitor"]
     F --> G["Git-ref audit"]
-    G --> H["Claude reviews the diff"]
+    G --> V["Claude runs the verify commands"]
+    V --> H["Claude reviews the diff"]
     H -->|findings| I["Optional resume fix round, same thread"]
     I --> F
     H -->|clean| J["You merge"]

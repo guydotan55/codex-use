@@ -28,6 +28,7 @@ FINAL REPORT (this exact structure)
 ## Not done
 ## Assumptions
 ## How to verify
+(exact shell commands, one per line, runnable from the worktree root, that prove the work: tests, build, lint. Claude runs them after the run.)
 ```
 
 ## Variants
