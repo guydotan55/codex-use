@@ -163,7 +163,7 @@ unreported run as running, finished-unreported or died; pick up at Step 7.
 
 ## Step 7. Finish
 
-Keep this bounded: one diff read, one command beyond the checklist.
+Keep this bounded: one diff read, plus the verify commands in item 4.
 
 1. Read `<attempt>/last-message.md`. A missing file, a non-zero `exit_code`, or
    no `turn.completed` is a failure, whatever the message says. If the four
@@ -177,16 +177,33 @@ Keep this bounded: one diff read, one command beyond the checklist.
    the run's own branch is printed as `**BREACH**`; put it in bold at the top of
    the report. Another session working in the same repo also moves refs, so name
    the ref and let the user judge.
-4. `$S/codex-status.sh --finish <attempt>` writes the END line (exit, duration,
+4. Try the result (build mode, every attempt). Codex's "How to verify" is a
+   claim, not proof: Codex wrote it and never had to show it passing.
+   - In the worktree, run every command under "How to verify", exactly as
+     written. If none is listed, run the project's own test command (from
+     package.json, Makefile, pyproject or the README). If there is no runnable
+     check at all, say "nothing to run" in the report; never skip silently.
+   - If the change is an app (website, server, CLI), start it with your usual
+     launch command or run skill and check the changed behavior once.
+   - For each command, keep the exit code and the last lines of output.
+   - Any failing command goes in bold at the top of the report as
+     `**FAILS: <command>**` with the error line, above Codex's "Done". A failure
+     outranks Codex's report: the work is not done, whatever "Done" says.
+   - Never write "works", "passes" or "tested" without output from this item.
+   Read-only and research runs skip this item.
+5. `$S/codex-status.sh --finish <attempt>` writes the END line (exit, duration,
    tokens) and removes the run from `active.json`. It prints the outcome and
    whether the report is structured.
-5. Report to the user: Done / Not done / Assumptions from Codex's report, commits,
-   files changed, duration, tokens, audit result. Flag every "Not done" item.
+6. Report to the user: verify results first (each command and pass/fail), then
+   Done / Not done / Assumptions from Codex's report, commits, files changed,
+   duration, tokens, audit result. Flag every "Not done" item.
 
 ## Step 8. Review and one fix round
 
 1. Optional but recommended: run one independent review of the worktree diff
    (for example `/code-review`, or a reviewer subagent) and announce it first.
+   Give the reviewer the Step 7 verify results. Every failing verify command
+   is a finding for the fix round, with or without a review.
 2. If findings are worth fixing, write a fix brief (the fix-round variant in
    the template: findings with file and line, same ENVIRONMENT block) and launch
    a resume:
@@ -196,7 +213,8 @@ Keep this bounded: one diff read, one command beyond the checklist.
    Codex continues the same thread, so it still has the code in context. It
    creates `attempt-2/`; repeat Steps 5 to 7 on that attempt. Read-only runs
    cannot be resumed (`codex exec resume` has no sandbox flag).
-3. Verify the fix yourself with one diff read and one test command.
+3. Verify the fix yourself: one diff read, and re-run every Step 7 verify
+   command. The fix is done only when they all pass.
 4. A second fix round is never automatic. Ask the user, naming what is still open,
    because unbounded review-fix loops are where Codex runs spiral.
 
