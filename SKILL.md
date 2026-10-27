@@ -206,7 +206,8 @@ Keep this bounded: one diff read, plus the verify commands in item 4.
    is a finding for the fix round, with or without a review.
 2. If findings are worth fixing, write a fix brief (the fix-round variant in
    the template: findings with file and line, same ENVIRONMENT block) and launch
-   a resume:
+   a resume. Tell Codex to fix every instance of each finding's bug pattern, not
+   only the flagged line:
    ```
    $S/codex-launch.sh --resume <RUN_DIR> --model <id> --effort <level> --brief <fix-brief>
    ```
@@ -216,7 +217,8 @@ Keep this bounded: one diff read, plus the verify commands in item 4.
 3. Verify the fix yourself: one diff read, and re-run every Step 7 verify
    command. The fix is done only when they all pass.
 4. A second fix round is never automatic. Ask the user, naming what is still open,
-   because unbounded review-fix loops are where Codex runs spiral.
+   because unbounded review-fix loops are where Codex runs spiral. If the user
+   approves another review, review only the diff since the last review.
 
 ## Step 9. Hand-off
 
